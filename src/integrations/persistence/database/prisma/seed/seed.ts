@@ -46,6 +46,33 @@ async function main() {
     });
   }
 
+  await prisma.user.create({
+    data: {
+      email: 'daltineo@email.com',
+      password: bcrypt.hashSync('123456', 10),
+      profile: {
+        create: {
+          username: 'daltineo',
+          bio: 'I am a software engineer',
+          birthDate: new Date('2002-01-01'),
+          posts: {
+            create: [
+              {
+                title: 'Milkshake de banana',
+                content:
+                  'A receita de milkshake de banana é muito simples e fácil de fazer. Basta misturar o leite, o suco de banana e o açúcar no liquidificador e pronto!',
+              },
+              {
+                title: 'Pão de queijo',
+                content: 'Pão de queijo é bão demais, sô!',
+              },
+            ],
+          },
+        },
+      },
+    },
+  });
+
   console.log('Database seeded!');
 }
 
