@@ -1,38 +1,42 @@
-import * as bcrypt from "bcrypt";
-import { Prisma, PrismaClient } from "../../../../../../generated/prisma";
+import * as bcrypt from 'bcrypt';
+import { Prisma, PrismaClient } from '../../../../../../generated/prisma';
+import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
-
-function generateBirthDate() {
-  const start = new Date(1980, 0, 1);
-  const end = new Date(2015, 11, 31);
-  const randomTimestamp =
-    start.getTime() + Math.random() * (end.getTime() - start.getTime());
-  return new Date(randomTimestamp);
-}
 
 async function main() {
   for (let i = 0; i < 10; i++) {
     let posts: Prisma.PostCreateManyAuthorInput[] = [];
 
-    const numberOfPosts = Math.floor(Math.random() * 10);
+    const numberOfPosts = Math.floor(Math.random() * 101);
+
+    const birthDate = faker.date.birthdate({
+      min: 10,
+      max: 40,
+      mode: 'age',
+    });
+
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const password = faker.internet.password();
 
     for (let j = 0; j < numberOfPosts; j++) {
       posts.push({
-        title: `Post ${j}`,
-        content: `Content ${j}`,
+        title: faker.lorem.sentence(),
+        content: faker.lorem.paragraph(),
+        deleted: faker.datatype.boolean({ probability: 0.9 }),
       });
     }
 
     await prisma.user.create({
       data: {
-        email: `user${i}@example.com`,
-        password: bcrypt.hashSync(`123456-${i}`, 10),
+        email: faker.internet.email({ firstName, lastName }),
+        password: bcrypt.hashSync(password, 10),
         profile: {
           create: {
-            username: `user${i}`,
-            bio: `Bio ${i}`,
-            birthDate: generateBirthDate(),
+            username: faker.internet.username({ firstName, lastName }),
+            bio: faker.lorem.paragraph(),
+            birthDate,
             posts: {
               create: posts,
             },
@@ -42,7 +46,7 @@ async function main() {
     });
   }
 
-  console.log("Database seeded!");
+  console.log('Database seeded!');
 }
 
 main()

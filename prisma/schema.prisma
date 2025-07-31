@@ -23,10 +23,10 @@ model User {
 }
 
 model Profile {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   bio       String
-  birthDate DateTime? @map("birth_date")
-  username  String?   @unique
+  birthDate DateTime @map("birth_date")
+  username  String   @unique
 
   userId String @unique @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
@@ -41,10 +41,11 @@ model Profile {
 model Post {
   id      String  @id @default(cuid())
   title   String
-  content String?
+  content String
+  deleted Boolean @default(false)
 
-  authorId String?  @map("author_id")
-  author   Profile? @relation(fields: [authorId], references: [id])
+  authorId String  @map("author_id")
+  author   Profile @relation(fields: [authorId], references: [id])
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
