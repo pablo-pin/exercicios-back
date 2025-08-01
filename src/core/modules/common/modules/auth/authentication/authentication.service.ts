@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/integrations/persistence/database/prisma/prisma.service';
-import { User, UserRole } from 'generated/prisma';
+import { User } from 'generated/prisma';
 import { AuthPayload } from 'src/core/types/interfaces/auth-payload.inteface';
 import { IRequestUser } from './auth.interfaces';
 import { ConfigService } from '@nestjs/config';
@@ -73,7 +73,7 @@ export class AuthenticationService {
     return {
       id: user.id,
       email: user.email,
-      role: user.role as UserRole,
+      role: user.role,
     };
   }
 
