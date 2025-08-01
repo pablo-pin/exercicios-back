@@ -19,6 +19,11 @@ export class SignUpDto {
   @IsNotEmpty()
   email: string;
 
+  @ApiProperty({ example: 'John Doe' })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
   @ApiProperty({ example: '123456' })
   @IsString()
   @IsNotEmpty()

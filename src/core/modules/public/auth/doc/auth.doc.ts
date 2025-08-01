@@ -7,6 +7,9 @@ export class SignUpResponseDto {
   @ApiProperty({ example: 'user@email.com' })
   email: string;
 
+  @ApiProperty({ example: 'John Doe' })
+  name: string;
+
   @ApiProperty({ example: '2025-01-01' })
   createdAt: Date;
 
@@ -17,6 +20,9 @@ export class SignUpResponseDto {
 export class SignInResponseDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
   id: string;
+
+  @ApiProperty({ example: 'USER' })
+  role: string;
 
   @ApiProperty({ example: 'ey.JWT.TOKEN' })
   token: string;

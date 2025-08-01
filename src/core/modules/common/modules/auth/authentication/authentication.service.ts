@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/integrations/persistence/database/prisma/prisma.service';
-import { User } from 'generated/prisma';
+import { User, UserRole } from 'generated/prisma';
 import { AuthPayload } from 'src/core/types/interfaces/auth-payload.inteface';
 import { IRequestUser } from './auth.interfaces';
 import { ConfigService } from '@nestjs/config';
@@ -73,11 +73,12 @@ export class AuthenticationService {
     return {
       id: user.id,
       email: user.email,
+      role: user.role as UserRole,
     };
   }
 
   async signUp(signUpDto: SignUpDto): Promise<SignUpResponseDto> {
-    const { email, password } = signUpDto;
+    const { email, password, name } = signUpDto;
 
     const userExists = await this.prismaService.user.findUnique({
       where: {
@@ -93,6 +94,7 @@ export class AuthenticationService {
 
     const user = await this.prismaService.user.create({
       data: {
+        name,
         email,
         password: hashedPassword,
       },
@@ -104,6 +106,7 @@ export class AuthenticationService {
       token,
       id: user.id,
       email: user.email,
+      name: user.name,
       createdAt: user.createdAt,
     };
   }
@@ -129,6 +132,7 @@ export class AuthenticationService {
 
     return {
       id: user.id,
+      role: user.role,
       token,
     };
   }

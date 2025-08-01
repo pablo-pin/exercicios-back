@@ -8,13 +8,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String  @id @default(cuid())
-  active   Boolean @default(true)
-  email    String  @unique
-  password String
+enum UserRole {
+  USER
+  ADMIN
+}
 
-  profile Profile?
+enum DocumentType {
+  CPF
+  CNH
+  RG
+}
+
+model User {
+  id       String   @id @default(cuid())
+  active   Boolean  @default(true)
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole @default(USER)
+
+  documents Document[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -22,33 +35,44 @@ model User {
   @@map("users")
 }
 
-model Profile {
-  id        String   @id @default(cuid())
-  bio       String
-  birthDate DateTime @map("birth_date")
-  username  String   @unique
+model Document {
+  id String @id @default(cuid())
 
-  userId String @unique @map("user_id")
+  type      DocumentType
+  number    String
+  validated Boolean      @default(false)
+
+  userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
-  posts  Post[]
+
+  fileId String? @unique @map("file_id")
+  file   File?   @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("profiles")
+  @@map("documents")
 }
 
-model Post {
-  id      String  @id @default(cuid())
-  title   String
-  content String
-  deleted Boolean @default(false)
+model File {
+  id String @id @default(cuid())
 
-  authorId String  @map("author_id")
-  author   Profile @relation(fields: [authorId], references: [id])
+  operatorId   String? @map("operator_id")
+  operatorType String? @map("operator_type")
 
+  entityId String @map("entity_id")
+  entity   String @map("entity") @db.VarChar(100)
+
+  name      String // key do arquivo
+  type      String //tipo do arquivo
+  size      Int // em bytes
+  url       String   @db.Text //url do arquivo
+  expiresAt DateTime @map("expires_at") //data de validade da url
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("posts")
+  document Document?
+
+  @@unique([entityId, entity])
+  @@map("files")
 }
