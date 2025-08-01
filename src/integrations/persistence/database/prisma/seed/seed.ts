@@ -19,6 +19,7 @@ async function main() {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
     const password = faker.internet.password();
+    const email = faker.internet.email({ firstName, lastName }).toLowerCase();
 
     for (let j = 0; j < numberOfPosts; j++) {
       posts.push({
@@ -30,7 +31,7 @@ async function main() {
 
     await prisma.user.create({
       data: {
-        email: faker.internet.email({ firstName, lastName }),
+        email,
         password: bcrypt.hashSync(password, 10),
         profile: {
           create: {
