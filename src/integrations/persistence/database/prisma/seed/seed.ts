@@ -9,7 +9,7 @@ async function main() {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
     const password = faker.internet.password();
-    const email = faker.internet.email({ firstName, lastName }).toLocaleLowerCase();
+    const email = faker.internet.email({ firstName, lastName }).toLowerCase();
 
     await prisma.user.create({
       data: {
