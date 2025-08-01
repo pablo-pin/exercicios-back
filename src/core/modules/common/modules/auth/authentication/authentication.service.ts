@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   AppErrorConflict,
   AppErrorInternal,
@@ -12,6 +12,7 @@ import { AuthPayload } from 'src/core/types/interfaces/auth-payload.inteface';
 import { IRequestUser } from './auth.interfaces';
 import { ConfigService } from '@nestjs/config';
 import { SignInDto, SignUpDto } from 'src/core/modules/public/auth/dto/auth.dto';
+import { SignInResponseDto, SignUpResponseDto } from 'src/core/modules/public/auth/doc/auth.doc';
 
 @Injectable()
 export class AuthenticationService {
@@ -36,7 +37,7 @@ export class AuthenticationService {
   ): Promise<string | null> {
     const { password } = user;
 
-    const validPassword = informedPassword === password;
+    const validPassword = await bcrypt.compare(informedPassword, password);
 
     if (!validPassword) {
       return null;
@@ -75,7 +76,7 @@ export class AuthenticationService {
     };
   }
 
-  async signUp(signUpDto: SignUpDto) {
+  async signUp(signUpDto: SignUpDto): Promise<SignUpResponseDto> {
     const { email, password } = signUpDto;
 
     const userExists = await this.prismaService.user.findUnique({
@@ -88,23 +89,26 @@ export class AuthenticationService {
       throw new AppErrorConflict('E-mail já cadastrado');
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await this.prismaService.user.create({
       data: {
         email,
-        password,
+        password: hashedPassword,
       },
     });
 
     const token = await this.validateAndGenerateToken(user, password);
 
     return {
+      token,
       id: user.id,
       email: user.email,
-      token,
+      createdAt: user.createdAt,
     };
   }
 
-  async signIn(signAuthDto: SignInDto) {
+  async signIn(signAuthDto: SignInDto): Promise<SignInResponseDto> {
     const { email, password } = signAuthDto;
 
     const user = await this.prismaService.user.findFirst({
@@ -123,15 +127,9 @@ export class AuthenticationService {
       throw new AppErrorUnauthorized('Credenciais inválidas');
     }
 
-    const retorno = {
-      message: 'Operação realizada com sucesso.',
-      statusCode: HttpStatus.OK,
-      data: {
-        id: user.id,
-        token,
-      },
+    return {
+      id: user.id,
+      token,
     };
-
-    return retorno;
   }
 }

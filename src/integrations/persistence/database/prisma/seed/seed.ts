@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from '../../../../../../generated/prisma';
+import * as bcrypt from 'bcrypt';
 import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
@@ -30,7 +31,7 @@ async function main() {
     await prisma.user.create({
       data: {
         email: faker.internet.email({ firstName, lastName }),
-        password,
+        password: bcrypt.hashSync(password, 10),
         profile: {
           create: {
             username: faker.internet.username({ firstName, lastName }),
@@ -48,7 +49,7 @@ async function main() {
   await prisma.user.create({
     data: {
       email: 'daltineo@email.com',
-      password: '123456',
+      password: bcrypt.hashSync('123456', 10),
       profile: {
         create: {
           username: 'daltineo',
