@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   AppErrorConflict,
   AppErrorInternal,
@@ -123,15 +123,9 @@ export class AuthenticationService {
       throw new AppErrorUnauthorized('Credenciais inválidas');
     }
 
-    const retorno = {
-      message: 'Operação realizada com sucesso.',
-      statusCode: HttpStatus.OK,
-      data: {
-        id: user.id,
-        token,
-      },
+    return {
+      id: user.id,
+      token,
     };
-
-    return retorno;
   }
 }
