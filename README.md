@@ -37,3 +37,11 @@
 5. **Crie o arquivo `.env`** com os dados necessários para cada problema.
 
 6. **Utilize um banco de dados diferente para cada problema**, pois cada um possui um **schema** e uma **seed** diferente.
+
+7. **Rode** `npm i` para instalar as dependências do projeto.
+
+8. **Rode** `npx prisma migrate dev` para criar o banco de dados e aplicar as migrations (caso esteja no Windows, é necessário criar o banco de dados manualmente antes de rodar este comando).
+
+9. **Rode** `npx prisma db seed` para popular o banco de dados
+
+10. Pronto! Você já tem tudo que precisa para resolver os problemas. Boa sorte!
