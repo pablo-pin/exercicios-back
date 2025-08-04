@@ -52,3 +52,24 @@ model Post {
 
   @@map("posts")
 }
+
+model File {
+  id String @id @default(cuid())
+
+  operatorId   String? @map("operator_id")
+  operatorType String? @map("operator_type")
+
+  entityId String @map("entity_id")
+  entity   String @map("entity") @db.VarChar(100)
+
+  name      String // key do arquivo
+  type      String //tipo do arquivo
+  size      Int // em bytes
+  url       String   @db.Text //url do arquivo
+  expiresAt DateTime @map("expires_at") //data de validade da url
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([entityId, entity])
+  @@map("files")
+}
